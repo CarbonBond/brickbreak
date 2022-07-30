@@ -254,28 +254,34 @@ void ballHitsPaddle(double deltaTime, struct paddle paddle) {
 
     hitDirection = normalize(hitDirection);
 
-    /* Trying to work with vetor rotation
-    float angle = 03;
-    ball.speed = normalize(ball.speed);
-    ball.speed.x = (ball.speed.x * std::cos(angle) - ball.speed.y * std::sin(angle));
-    ball.speed.y = (ball.speed.x * std::sin(angle) + ball.speed.y * std::cos(angle));
-   */ 
+    // //Make paddles influense less strong by pushing it towards -y 0.
+    // hitDirection.x += 0;
+    // hitDirection.y -= 0.3;
+    // hitDirection = normalize(hitDirection);
+
+    //get the angle of approch and add it with the paddles influense. 
+    vector2d approchAngle = {ball.speed.x , ball.speed.y *-1};
+    approchAngle = normalize(approchAngle);
+    hitDirection.x += approchAngle.x;
+    hitDirection.y += approchAngle.y;
+
+    //Get correct speed.
+    hitDirection = normalize(hitDirection);
+    hitDirection.x *= BALL_SPEED;
+    hitDirection.y *= BALL_SPEED;
 
     ball.speed = hitDirection;
-
-    ball.speed.x *= BALL_SPEED;
-    ball.speed.y *= BALL_SPEED;
   }
 }
 
 void ballCollision(double deltaTime) {
   // Bounce of left and right of screen
-  if (ball.pos.x + ball.radius > WINDOW_WIDTH ||
-      ball.pos.x - ball.radius < 0) {
+  if (ball.pos.x + (ball.speed.x * deltaTime) + ball.radius > WINDOW_WIDTH ||
+      ball.pos.x - ball.radius + (ball.speed.x * deltaTime)  < 0) {
     ball.speed.x *= -1;
   }
   // Bounce off top of screen
-  if (ball.pos.y < 0) {
+  if (ball.pos.y + (ball.speed.y * deltaTime)< 0) {
     ball.speed.y *= -1;
   }
 
